@@ -8,7 +8,7 @@ const theme = createMuiTheme({
     type: 'dark',
   },
 });
-
+// javascript로 key 기준 row diff 로직 구현해서 result json 만들기
 class App extends Component {
   render() {
     return (

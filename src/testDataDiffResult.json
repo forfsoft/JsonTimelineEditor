@@ -1,6 +1,12 @@
 {
     "headers": [
         { 
+            "title": "State", 
+            "field": "state",
+            "editable": "never",
+            "lookup": { "none": "", "add": "Add", "remove": "Remove", "modify": "Modify" }
+        },
+        { 
             "title": "Alias", 
             "field": "alias",
             "editable": "never"
@@ -12,18 +18,21 @@
         },
         { 
             "title": "Desc", 
-            "field": "desc"
+            "field": "desc",
+            "width": 300
         }
     ],
     "bodys": [
-        { 
+        {  
+            "state": "",
             "alias": "test-event", 
             "value": "false",
             "desc": "설 이벤트"
         },
-        { 
+        {
+            "state": "modify",
             "alias": "test-event2", 
-            "value": "true",
+            "value": "false",
             "desc": "추석 이벤트"
         }
     ],
