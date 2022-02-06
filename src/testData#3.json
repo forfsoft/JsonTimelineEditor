@@ -1,0 +1,26 @@
+{
+    "bodys": [
+        { 
+            "alias": "test-event", 
+            "value": "false",
+            "desc": "설 이벤트"
+        },
+        { 
+            "alias": "test-event2", 
+            "value": "false",
+            "desc": "추석 이벤트"
+        },
+        { 
+            "alias": "test-event3", 
+            "value": "true",
+            "desc": "크리스마스 이벤트"
+        }
+    ],
+    "extra": {
+        "title": "timeline view",
+        "revision": 3,
+        "description": "크리스마스 이벤트 시작",
+        "date": "2022-12-24",
+        "who": "goli80"
+    }
+}

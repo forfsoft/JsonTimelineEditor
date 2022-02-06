@@ -1,44 +1,112 @@
 {
     "headers": [
         { 
-            "title": "State", 
+            "title": "state", 
             "field": "state",
             "editable": "never",
-            "lookup": { "none": "", "add": "Add", "remove": "Remove", "modify": "Modify" }
+            "lookup": { "none": "None", "add": "Add", "remove": "Remove", "modify": "Modify" }
         },
         { 
-            "title": "Alias", 
+            "title": "revision", 
+            "field": "revision",
+            "editable": "never"
+        },
+        { 
+            "title": "alias", 
             "field": "alias",
             "editable": "never"
         },
         { 
-            "title": "Value", 
+            "title": "value", 
             "field": "value",
             "editable": "never"
         },
         { 
-            "title": "Desc", 
+            "title": "desc", 
             "field": "desc",
-            "width": 300
+            "editable": "never"
         }
     ],
     "bodys": [
         {  
-            "state": "",
+            "state": "none",
+            "revision": "1",
             "alias": "test-event", 
             "value": "false",
             "desc": "설 이벤트"
         },
         {
             "state": "modify",
+            "revision": "2",
             "alias": "test-event2", 
             "value": "false",
-            "desc": "추석 이벤트"
+            "desc": "추석 이벤트,추석 이벤트,추석 이벤트,추석 이벤트추석 이벤트,추석 이벤트,추석 이벤트,추석 이벤트추석 이벤트,추석 이벤트,추석 이벤트,추석 이벤트추석 이벤트,추석 이벤트,추석 이벤트,추석 이벤트"
+        },
+        {  
+            "state": "none",
+            "revision": "3",
+            "alias": "test-event3", 
+            "value": "false",
+            "desc": "설 이벤트"
+        },
+        {
+            "state": "modify",
+            "revision": "1",
+            "alias": "test-event4", 
+            "value": "false",
+            "desc": "추석 이벤트,추석 이벤트,추석 이벤트,추석 이벤트추석 이벤트,추석 이벤트,추석 이벤트,추석 이벤트추석 이벤트,추석 이벤트,추석 이벤트,추석 이벤트추석 이벤트,추석 이벤트,추석 이벤트,추석 이벤트"
+        },
+        {  
+            "state": "none",
+            "revision": "1",
+            "alias": "test-event5", 
+            "value": "false",
+            "desc": "설 이벤트"
+        },
+        {
+            "state": "modify",
+            "revision": "1",
+            "alias": "test-event6", 
+            "value": "false",
+            "desc": "추석 이벤트,추석 이벤트,추석 이벤트,추석 이벤트추석 이벤트,추석 이벤트,추석 이벤트,추석 이벤트추석 이벤트,추석 이벤트,추석 이벤트,추석 이벤트추석 이벤트,추석 이벤트,추석 이벤트,추석 이벤트"
+        },
+        {  
+            "state": "none",
+            "revision": "1",
+            "alias": "test-event8", 
+            "value": "false",
+            "desc": "설 이벤트"
+        },
+        {  
+            "state": "none",
+            "revision": "1",
+            "alias": "test-event9", 
+            "value": "false",
+            "desc": "설 이벤트"
+        },
+        {  
+            "state": "none",
+            "revision": "2",
+            "alias": "test-event10", 
+            "value": "false",
+            "desc": "설 이벤트"
+        },
+        {  
+            "state": "add",
+            "revision": "2",
+            "alias": "test-event11", 
+            "value": "false",
+            "desc": "설 이벤트"
+        },
+        {  
+            "state": "none",
+            "revision": "1",
+            "alias": "test-event12", 
+            "value": "false",
+            "desc": "설 이벤트"
         }
     ],
     "extra": {
-        "title": "timeline view",
-        "rivition": 1,
-        "description": "test"
+        "title": "timeline view sample"
     }
 }

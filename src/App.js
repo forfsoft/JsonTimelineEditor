@@ -1,25 +1,32 @@
 import './App.css';
 import React, { Component } from 'react';
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import TimelineDataGrid from './components/TimelineDataGrid'
+import { Box } from '@material-ui/core'
 
-const theme = createMuiTheme({
+const theme = createTheme({
   palette: {
     type: 'dark',
   },
 });
 // javascript로 key 기준 row diff 로직 구현해서 result json 만들기
-class App extends Component {
-  render() {
-    return (
-      <MuiThemeProvider theme={theme}>
-        <div className="App">
+export default function App() {
+  console.log("modify")
+
+  return (
+    <ThemeProvider theme={theme}>
+
+        <Box
+          sx={{
+            display: 'flex',
+            width: '100%',
+            bgcolor: 'background.default',
+            color: 'text.primary',
+            borderRadius: 1,
+          }}
+        >
           <TimelineDataGrid />
-        </div>
-      </MuiThemeProvider>
-    );
-  }
+        </Box>
+    </ThemeProvider>
+  );
 }
-
-
-export default App;

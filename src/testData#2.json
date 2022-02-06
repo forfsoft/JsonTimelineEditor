@@ -1,0 +1,21 @@
+{
+    "bodys": [
+        { 
+            "alias": "test-event", 
+            "value": "false",
+            "desc": "설 이벤트"
+        },
+        { 
+            "alias": "test-event2", 
+            "value": "false",
+            "desc": "추석 이벤트"
+        }
+    ],
+    "extra": {
+        "title": "timeline view",
+        "revision": 2,
+        "description": "추석 이벤트 종료",
+        "date": "2022-01-24",
+        "who": "goli81"
+    }
+}
