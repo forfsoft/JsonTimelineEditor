@@ -40,7 +40,7 @@ function findBodyIndex(bodys, keyColumnName, findKey) {
         var body = bodys[i];
         var keyName = body[keyColumnName];
         if (findKey === keyName) {
-            return i;
+            return i+1;
         }
     }
     return -1;
@@ -120,17 +120,14 @@ function bodyCompare(dataList, keyColumnName) {
                         insertIndex = 0;
                     }
                 }
-                outputBodys.splice(insertIndex, 0, insertRemoveBodys);
+                Array.prototype.splice.apply(outputBodys, [insertIndex, 0].concat(insertRemoveBodys));
                 insertRemoveBodys.length = 0;
             }
             matchAliasName = keyName;
         }
     }
     if (insertRemoveBodys.length > 0) {
-        console.log("===1",insertRemoveBodys, outputBodys)
         Array.prototype.push.apply(outputBodys,insertRemoveBodys);
-        //outputBodys.push.apply(insertRemoveBodys)
-        console.log("===2",outputBodys)
     }
 
     // old data revision update

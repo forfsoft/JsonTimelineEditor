@@ -24,6 +24,7 @@ export default function TimelineDataGrid() {
         var dataList = []
         dataList.push(jsonData1);
         dataList.push(jsonData2);
+        dataList.push(jsonData3);
         var compareResult = JsonCompare(dataList, "alias");
         setColumns(compareResult["headers"]);
         setDatas(compareResult["bodys"]);
@@ -35,13 +36,23 @@ export default function TimelineDataGrid() {
             if (undefined != title) {
                 setTitleName(title);
             }
-            var revision = lastRevisionData["extra"].revision;
-            if (undefined != revision) {
-                selectRevision(revision);
+            var lastRevisionIndex = lastRevisionData["extra"].revision;
+            if (undefined != lastRevisionIndex) {
+                setSelectRevisionIndex(lastRevisionIndex);
             }
+            
         }
-
       },[])
+
+    useEffect(() => {
+        if (undefined === revisionData || revisionData.length == 0) {
+            return;
+        }
+        if (undefined === selectRevisionIndex || selectRevisionIndex == 0) {
+            return;
+        }
+        updateRevisionInfo();
+    }, [revisionData, selectRevisionIndex])
 
     function onSaveFile() {
         alert("onSaveFile")
@@ -67,23 +78,21 @@ export default function TimelineDataGrid() {
         if (revisionIndex === undefined) {
             return;
         }
-        selectRevision(revisionIndex);
+        setSelectRevisionIndex(revisionIndex);
     }
 
-    function selectRevision(revisionIndex) {
-        if (revisionIndex === undefined) {
+    function updateRevisionInfo() {
+        if (selectRevisionIndex === undefined) {
             return;
         }
-        setSelectRevisionIndex(revisionIndex)
-
         if (revisionData === undefined || revisionData.length == 0) {
             return;
         }
-        var targetRevisionData = revisionData[revisionIndex]
+        var targetRevisionData = revisionData[selectRevisionIndex]
         if (targetRevisionData === undefined) {
             return;
         }
-        console.log(targetRevisionData)
+        //console.log(targetRevisionData)
         setSelectRevisionDate(targetRevisionData["date"])
         setSelectRevisionDesc(targetRevisionData["description"])
     }

@@ -6,6 +6,11 @@
             "desc": "설 이벤트"
         },
         { 
+            "alias": "test-event11", 
+            "value": "true",
+            "desc": "추석 이벤트"
+        },
+        { 
             "alias": "test-event2", 
             "value": "true",
             "desc": "추석 이벤트"
