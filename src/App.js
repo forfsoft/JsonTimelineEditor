@@ -9,7 +9,8 @@ const theme = createTheme({
     type: 'dark',
   },
 });
-// javascript로 key 기준 row diff 로직 구현해서 result json 만들기
+// timeline slider bar description위에다가 ui 배치하기
+// python으로 각 리비전마다 diff result파일 만들어서 뷰어는 뷰만 하도록 만들기
 export default function App() {
   console.log("modify")
 

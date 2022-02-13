@@ -1,7 +1,7 @@
 {
     "bodys": [
         { 
-            "alias": "test-event", 
+            "alias": "test-event1", 
             "value": "false",
             "desc": "설 이벤트"
         },
@@ -9,6 +9,11 @@
             "alias": "test-event2", 
             "value": "false",
             "desc": "추석 이벤트"
+        },
+        { 
+            "alias": "test-event3", 
+            "value": "false",
+            "desc": "크리스마스 이벤트"
         }
     ],
     "extra": {

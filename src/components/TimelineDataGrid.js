@@ -1,19 +1,47 @@
 import './../App.css';
-import React, { useState, Component } from 'react';
+import React, { useState, useEffect, Component } from 'react';
 import MaterialTable, { MTableToolbar } from 'material-table';
-import jsonData from './../testDataDiffResult.json'
-import jsonRevisionData from './../testDataRevisionAll.json'
-
+import jsonData1 from './../testData#1.json'
+import jsonData2 from './../testData#2.json'
+import jsonData3 from './../testData#3.json'
+//import jsonData from './../testDataDiffResult.json'
+//import jsonRevisionData from './../testDataRevisionAll.json'
+import {JsonCompare} from './DataCompare'
 import {TextField, Button, Chip, FormControl, InputLabel, Select, MenuItem} from '@material-ui/core'
 
 
 export default function TimelineDataGrid() {
 
-    const [columns, setColumns] = useState(jsonData["headers"]);
-    const [datas, setDatas] = useState(jsonData["bodys"]);
+    const [columns, setColumns] = useState([]);
+    const [datas, setDatas] = useState([]);
+    const [revisionData, setRevisionData] = useState({});
     const [selectRevisionIndex, setSelectRevisionIndex] = useState("0");
     const [selectRevisionDate, setSelectRevisionDate] = useState(" ");
     const [selectRevisionDesc, setSelectRevisionDesc] = useState(" ");
+    const [titleName, setTitleName] = useState("Data Timeline Compare");
+
+    useEffect(()=>{
+        var dataList = []
+        dataList.push(jsonData1);
+        dataList.push(jsonData2);
+        var compareResult = JsonCompare(dataList, "alias");
+        setColumns(compareResult["headers"]);
+        setDatas(compareResult["bodys"]);
+        setRevisionData(compareResult["revision"]);
+
+        var lastRevisionData = dataList[dataList.length-1];
+        if (undefined != lastRevisionData["extra"]) {
+            var title = lastRevisionData["extra"].title;
+            if (undefined != title) {
+                setTitleName(title);
+            }
+            var revision = lastRevisionData["extra"].revision;
+            if (undefined != revision) {
+                selectRevision(revision);
+            }
+        }
+
+      },[])
 
     function onSaveFile() {
         alert("onSaveFile")
@@ -39,19 +67,32 @@ export default function TimelineDataGrid() {
         if (revisionIndex === undefined) {
             return;
         }
-        console.log("select revision Index:",revisionIndex)
-        var revisionData = jsonRevisionData["revision"][revisionIndex]
-        //console.log(revisionData)
+        selectRevision(revisionIndex);
+    }
+
+    function selectRevision(revisionIndex) {
+        if (revisionIndex === undefined) {
+            return;
+        }
         setSelectRevisionIndex(revisionIndex)
-        setSelectRevisionDate(revisionData["date"])
-        setSelectRevisionDesc(revisionData["description"])
+
+        if (revisionData === undefined || revisionData.length == 0) {
+            return;
+        }
+        var targetRevisionData = revisionData[revisionIndex]
+        if (targetRevisionData === undefined) {
+            return;
+        }
+        console.log(targetRevisionData)
+        setSelectRevisionDate(targetRevisionData["date"])
+        setSelectRevisionDesc(targetRevisionData["description"])
     }
 
     return (
         <div className="TimelineView">
             <div className="GridView">
                 <MaterialTable
-                    title={jsonData["extra"].title}
+                    title={titleName}
                     columns={columns}
                     data={datas}
                     cellEditable={{
