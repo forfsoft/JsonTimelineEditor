@@ -76,20 +76,17 @@ function bodyCompare(dataList, keyColumnName) {
     // None, Modify, Add State 
     var previousMap = dataList[previousIndex]["map"];
     for (var body of currentBodys) {
-        var newBody = {}
-        newBody["revision"] = currentRevision;
+        var compareState = "none";
         var keyName = body[keyColumnName];
         var previousBody = previousMap[keyName];
         if (previousBody === undefined) {
-            newBody["state"] = "add";
+            compareState = "add";
         } else {
             if (false === deepCompareMaps(previousBody, body)) {
-                newBody["state"] = "modify";
-            } else {
-                newBody["state"] = "none";
+                compareState = "modify";
             }
         }
-        outputBodys.push(Object.assign(newBody, body));
+        outputBodys.push(createCompareBody(currentRevision, compareState, body));
     }
 
     // Remove State
@@ -102,14 +99,10 @@ function bodyCompare(dataList, keyColumnName) {
         var keyName = body[keyColumnName];
         var currentBody = currentMap[keyName];
         if (currentBody === undefined) {
-            var newBody = {}
-            newBody["revision"] = previousRevision;
-            newBody["state"] = "remove";
-            insertRemoveBodys.push(Object.assign(newBody, body))
+            insertRemoveBodys.push(createCompareBody(currentRevision, "remove", body))
         } else {
             if (insertRemoveBodys.length > 0) {
                 // remove 정보를 한번에 push
-
                 var insertIndex = 0;
                 if (matchAliasName == "") {
 
@@ -126,25 +119,32 @@ function bodyCompare(dataList, keyColumnName) {
             matchAliasName = keyName;
         }
     }
+    // 남은건 제일 하단에 추가
     if (insertRemoveBodys.length > 0) {
         Array.prototype.push.apply(outputBodys,insertRemoveBodys);
     }
 
-    // old data revision update
-    // var previousMap = previousData["map"];
-    // for (var current of currentMap) {
-    //     console.log(current)
-    //     // var keyName = currentBody[keyColumnName];
-    //     // if (keyName != undefined) {
-    //     // }
-    // }
-
-    for (var i = lastIndex; i >= 0; i--) {
-        var data = dataList[i];
-        //console.log(data)
+    // revision update
+    for (var body of outputBodys) {
+        var keyName = body[keyColumnName];
+        if (body["state"] == "none") {
+            var currentBody = currentMap[keyName];
+            for (var i = previousIndex; i >= 0; i--) {
+                var compareMap = dataList[i]["map"];
+                if (undefined == compareMap) {
+                    break;
+                }
+                var compareBody = compareMap[keyName];
+                if (undefined == compareBody) {        
+                    break;
+                }
+                if (false === deepCompareMaps(currentBody, compareBody)) {
+                    break;
+                }
+                body["revision"] = dataList[i]["extra"]["revision"];
+            }
+        }
     }
-
-    //console.log(outputBodys)
     return outputBodys
 }
 
@@ -176,7 +176,14 @@ function createRevisionMap(dataList) {
     return revisionMap;
 }
 
-export function JsonCompare(dataList, keyColumnName){
+function createCompareBody(revisionKey, compareState, orgBody) {
+    var newBody = {}
+    newBody["revision"] = revisionKey;
+    newBody["state"] = compareState;
+    return Object.assign(newBody, orgBody);
+}
+
+export function InitJsonCompare(dataList, keyColumnName){
     if (dataList === undefined) {
         console.log("data file not found");
         return;
@@ -185,43 +192,38 @@ export function JsonCompare(dataList, keyColumnName){
         console.log("data file length error");
         return;
     }
-    //console.log("JsonCompare start")
     createAliasMap(dataList, keyColumnName)
     var revisionMap = createRevisionMap(dataList)
-    console.log(dataList, revisionMap)
+    //console.log(dataList, revisionMap)
+    //console.log(dataList)    
+    return revisionMap;
+}
 
-    // extra 정보에 revision이 있으면 header 정보에 revision column 정보 추가
+export function JsonCompareBody(dataList, keyColumnName){
+    if (dataList === undefined) {
+        console.log("data file not found");
+        return;
+    }
+
+    if (dataList.length == 0) {
+        console.log("data file length error");
+        return;
+    }
+
     var headers = createCompareHeader(dataList);
-    var bodys = bodyCompare(dataList, keyColumnName)
-    
-    
-    //  for (var i = len; i >= 0; i--) {
-    //     var data = dataList[i];
-    //     console.log(data)
-    // }
-
-    //var bodys = 
-
-    // 최신 데이터 기준으로 이전 리비전과 compare 정보 생성
-    // 모든 데이터 순회하며 revision 숫자 기입
-
-    // 사용자 지정 주석 데이터 Merge
-
-
-
-
-    // arr.slice().reverse().forEach(x => console.log(x))
-    // var prevBodys = prevData["bodys"];
-    // var prevBodys = prevData["extra"];
-    // var nextBodys = nextData["bodys"];
-    // var nextBodys = nextData["extra"];
-
-    // var output
+    var bodys = []
+    if (dataList.length == 1) {
+        var currentBodys = dataList[0]["bodys"];
+        var currentRevision = dataList[0]["extra"]["revision"];
+        for (var body of currentBodys) {
+            bodys.push(createCompareBody(currentRevision, "none", body));
+        }
+    } else {
+        bodys = bodyCompare(dataList, keyColumnName)
+    }
 
     var output = {}
     output["headers"] = headers;
     output["bodys"] = bodys;
-    output["revision"] = revisionMap;
-    console.log(output)    
     return output;
 }

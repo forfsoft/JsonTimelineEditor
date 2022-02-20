@@ -1,144 +1,85 @@
 import './../App.css';
-import React, { useState, useEffect, Component } from 'react';
-import MaterialTable, { MTableToolbar } from 'material-table';
+import React, { useState, useEffect, useCallback } from 'react';
+import TimelineDetailView from './TimelineDetailView'
+import TimelineGridView from './TimelineGridView'
 import jsonData1 from './../testData#1.json'
 import jsonData2 from './../testData#2.json'
 import jsonData3 from './../testData#3.json'
-//import jsonData from './../testDataDiffResult.json'
-//import jsonRevisionData from './../testDataRevisionAll.json'
-import {JsonCompare} from './DataCompare'
-import {TextField, Button, Chip, FormControl, InputLabel, Select, MenuItem} from '@material-ui/core'
+import { InitJsonCompare, JsonCompareBody } from './DataCompare'
+import { TextField, Slider } from '@material-ui/core'
 
-
-export default function TimelineDataGrid() {
-
-    const [columns, setColumns] = useState([]);
-    const [datas, setDatas] = useState([]);
-    const [revisionData, setRevisionData] = useState({});
-    const [selectRevisionIndex, setSelectRevisionIndex] = useState("0");
-    const [selectRevisionDate, setSelectRevisionDate] = useState(" ");
-    const [selectRevisionDesc, setSelectRevisionDesc] = useState(" ");
-    const [titleName, setTitleName] = useState("Data Timeline Compare");
-
-    useEffect(()=>{
-        var dataList = []
-        dataList.push(jsonData1);
-        dataList.push(jsonData2);
-        dataList.push(jsonData3);
-        var compareResult = JsonCompare(dataList, "alias");
-        setColumns(compareResult["headers"]);
-        setDatas(compareResult["bodys"]);
-        setRevisionData(compareResult["revision"]);
-
-        var lastRevisionData = dataList[dataList.length-1];
-        if (undefined != lastRevisionData["extra"]) {
-            var title = lastRevisionData["extra"].title;
-            if (undefined != title) {
-                setTitleName(title);
-            }
-            var lastRevisionIndex = lastRevisionData["extra"].revision;
-            if (undefined != lastRevisionIndex) {
-                setSelectRevisionIndex(lastRevisionIndex);
-            }
-            
-        }
-      },[])
+const TimelineDataGrid = () => {
+    const [compareResult, setCompareResult] = useState({});
+    const [revisionMap, setRevisionMap] = useState({});
+    const [dataList, setDataList] = useState([]);
+    const [selectRevisionDescKey, setSelectRevisionDescKey] = useState(undefined);
+    const [revisionMaxCount, setRevisionMaxCount] = useState(1);
+    const [selectRevisionIndex, setSelectRevisionIndex] = useState(0);
 
     useEffect(() => {
-        if (undefined === revisionData || revisionData.length == 0) {
-            return;
-        }
-        if (undefined === selectRevisionIndex || selectRevisionIndex == 0) {
-            return;
-        }
-        updateRevisionInfo();
-    }, [revisionData, selectRevisionIndex])
+        var compareFiles = []
+        compareFiles.push(jsonData1);
+        compareFiles.push(jsonData2);
+        compareFiles.push(jsonData3);
+        setDataList(compareFiles);
+        var revisions = InitJsonCompare(compareFiles, "alias");
+        setRevisionMap(revisions);
 
-    function onSaveFile() {
-        alert("onSaveFile")
-    }
+        setSelectRevisionIndex(compareFiles.length-1);
+    }, [])
 
-    function onEditDesc(rowData) {
-        alert("onEditDesc")
-    }
+    useEffect(() => {
+        var maxCount = Object.keys(revisionMap).length - 1;
+        
+        if (maxCount > 0) {
+            setRevisionMaxCount(maxCount);
+            // 마지막 리비젼 선택
+            setSelectRevisionIndex(maxCount);
+        }
+    }, [revisionMap])
 
-    function getRowColor(rowData) {
-        if (rowData.state === "add")
-            return '#FF66AA'
-        else if (rowData.state === "remove")
-            return '#FF6666'
-        else if (rowData.state === "modify")
-            return '#FFAA66'
-        return undefined
-    }
-
-    function onSelectedRow(rowData) {
-        console.log("select row:",rowData)
-        var revisionIndex = rowData["revision"]
-        if (revisionIndex === undefined) {
+    useEffect(() => {
+        if (dataList.length == 0) {
             return;
         }
-        setSelectRevisionIndex(revisionIndex);
-    }
+        if (selectRevisionIndex == undefined || selectRevisionIndex < 0) {
+            return;
+        }
 
-    function updateRevisionInfo() {
-        if (selectRevisionIndex === undefined) {
+        var compareList = []
+        for (var i = 0; i <= selectRevisionIndex; i++) {
+            compareList.push(dataList[i]);
+        }
+        //console.log(selectRevisionIndex, compareList)
+        var compare = JsonCompareBody(compareList, "alias");
+        if (undefined != compare) {
+            setCompareResult(compare);
+            //console.log(compare)
+        }
+    }, [dataList, revisionMaxCount, selectRevisionIndex])
+
+    function onRevisionChange(event, value) {
+        //console.log(value)
+        setSelectRevisionIndex(value)
+    } 
+
+    const onSelectedRow = useCallback(rowData => {
+        var revisionKey = rowData["revision"]
+        if (revisionKey === undefined) {
             return;
         }
-        if (revisionData === undefined || revisionData.length == 0) {
-            return;
-        }
-        var targetRevisionData = revisionData[selectRevisionIndex]
-        if (targetRevisionData === undefined) {
-            return;
-        }
-        //console.log(targetRevisionData)
-        setSelectRevisionDate(targetRevisionData["date"])
-        setSelectRevisionDesc(targetRevisionData["description"])
-    }
+        setSelectRevisionDescKey(revisionKey);
+    }, []);
 
     return (
         <div className="TimelineView">
-            <div className="GridView">
-                <MaterialTable
-                    title={titleName}
-                    columns={columns}
-                    data={datas}
-                    cellEditable={{
-                        onCellEditApproved: (newValue, oldValue, rowData, columnDef) => {
-                            return new Promise((resolve, reject) => {
-                                for (var i = 0; i < datas.length; i++) {
-                                    if (datas[i] == rowData) {
-                                        console.log("modify", columnDef.field, datas[i][columnDef.field])
-                                        datas[i][columnDef.field] = newValue;
-                                        //DB에 값 전송
-                                        setTimeout(resolve, 1);
-                                        break;
-                                    }
-                                }
-                            });
-                        }
-                    }}
-                    options={{
-                        grouping: true,
-                        search: true,
-                        columnsButton: true,
-                        filtering: true,
-                        paging: false,
-                        maxBodyHeight: "calc(100vh - 167px)",
-                        rowStyle: rowData => ({
-                            backgroundColor: getRowColor(rowData)
-                        })
-                    }}
-
-                    onRowClick={((evt, selectedRow) => onSelectedRow(selectedRow))}
-                />
-            </div>
-            <div className="DetailView">
-                <TextField id="filled-basic" className="DetailView-Revision" value={selectRevisionIndex}  size="small" label="revision" variant="filled" InputProps={{readOnly: true}} />
-                <TextField id="filled-basic" className="DetailView-Date" value={selectRevisionDate} size="small" label="date" variant="filled" InputProps={{ readOnly: true }} />
-                <TextField id="filled-basic" className="DetailView-Desc" value={selectRevisionDesc} size="small" label="desc" variant="filled" InputProps={{ readOnly: true }} />
-            </div>
+            <TimelineGridView dataList={dataList} compareResult={compareResult} onSelectedRow={onSelectedRow} />
+            <Slider 
+                value={selectRevisionIndex}
+                valueLabelDisplay="auto"
+                step={1} marks min={0} max={revisionMaxCount} onChange={onRevisionChange} />
+            <TimelineDetailView dataList={dataList} revisionMap={revisionMap} selectRevisionKey={selectRevisionDescKey} />
         </div>
     )
 }
+export default TimelineDataGrid;

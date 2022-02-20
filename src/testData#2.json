@@ -14,6 +14,16 @@
             "alias": "test-event3", 
             "value": "false",
             "desc": "크리스마스 이벤트"
+        },
+        { 
+            "alias": "test-event3-1", 
+            "value": "false",
+            "desc": "크리스마스 이벤트"
+        },
+        { 
+            "alias": "test-event-org", 
+            "value": "false",
+            "desc": "기본 이벤트"
         }
     ],
     "extra": {
