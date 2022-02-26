@@ -60,7 +60,7 @@ function deepCompareMaps(map1, map2) {
     return true;
 }
 
-function bodyCompare(dataList, keyColumnName) {
+function bodyCompare(dataList, keyColumnName, comapreCellValue) {
     if (dataList.length < 2) {
         console.log("data file length error");
         return;
@@ -86,7 +86,7 @@ function bodyCompare(dataList, keyColumnName) {
                 compareState = "modify";
             }
         }
-        outputBodys.push(createCompareBody(currentRevision, compareState, body));
+        outputBodys.push(createCompareBody(currentRevision, compareState, body, (comapreCellValue) ? previousBody : undefined));
     }
 
     // Remove State
@@ -99,7 +99,7 @@ function bodyCompare(dataList, keyColumnName) {
         var keyName = body[keyColumnName];
         var currentBody = currentMap[keyName];
         if (currentBody === undefined) {
-            insertRemoveBodys.push(createCompareBody(currentRevision, "remove", body))
+            insertRemoveBodys.push(createCompareBody(currentRevision, "remove", body, undefined))
         } else {
             if (insertRemoveBodys.length > 0) {
                 // remove 정보를 한번에 push
@@ -176,11 +176,30 @@ function createRevisionMap(dataList) {
     return revisionMap;
 }
 
-function createCompareBody(revisionKey, compareState, orgBody) {
+function createCompareBody(revisionKey, compareState, orgBody, previousBody) {
     var newBody = {}
+    newBody = JSON.parse(JSON.stringify(orgBody));
+
+    if (undefined != previousBody) {
+        for (var key in newBody) {
+            var map1Value = newBody[key];
+            var map2Value = previousBody[key];
+            if (map1Value != map2Value) {
+                newBody[key] += "\n[" + map2Value + "]";
+            }
+        }
+    }
+
     newBody["revision"] = revisionKey;
     newBody["state"] = compareState;
-    return Object.assign(newBody, orgBody);
+    //newBody["desc"] = "aasdasdf<p>as\nfasd<br/>asfd";
+    //console.log(newBody)
+    return newBody;
+    // newBody["revision"] = revisionKey;
+    // newBody["state"] = compareState;
+    // 
+    // console.log(newBody)
+    // return Object.assign(newBody, orgBody);
 }
 
 export function InitJsonCompare(dataList, keyColumnName){
@@ -199,7 +218,7 @@ export function InitJsonCompare(dataList, keyColumnName){
     return revisionMap;
 }
 
-export function JsonCompareBody(dataList, keyColumnName){
+export function JsonCompareBody(dataList, keyColumnName, comapreCellValue){
     if (dataList === undefined) {
         console.log("data file not found");
         return;
@@ -216,10 +235,10 @@ export function JsonCompareBody(dataList, keyColumnName){
         var currentBodys = dataList[0]["bodys"];
         var currentRevision = dataList[0]["extra"]["revision"];
         for (var body of currentBodys) {
-            bodys.push(createCompareBody(currentRevision, "none", body));
+            bodys.push(createCompareBody(currentRevision, "none", body, undefined));
         }
     } else {
-        bodys = bodyCompare(dataList, keyColumnName)
+        bodys = bodyCompare(dataList, keyColumnName, comapreCellValue)
     }
 
     var output = {}

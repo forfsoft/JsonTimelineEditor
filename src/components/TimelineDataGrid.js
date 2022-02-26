@@ -9,6 +9,7 @@ import { InitJsonCompare, JsonCompareBody } from './DataCompare'
 import { TextField, Slider } from '@material-ui/core'
 
 const TimelineDataGrid = () => {
+    const [comapreCellValue, setComapreCellValue] = useState(false);
     const [compareResult, setCompareResult] = useState({});
     const [revisionMap, setRevisionMap] = useState({});
     const [dataList, setDataList] = useState([]);
@@ -51,12 +52,12 @@ const TimelineDataGrid = () => {
             compareList.push(dataList[i]);
         }
         //console.log(selectRevisionIndex, compareList)
-        var compare = JsonCompareBody(compareList, "alias");
+        var compare = JsonCompareBody(compareList, "alias", comapreCellValue);
         if (undefined != compare) {
             setCompareResult(compare);
             //console.log(compare)
         }
-    }, [dataList, revisionMaxCount, selectRevisionIndex])
+    }, [dataList, revisionMaxCount, selectRevisionIndex, comapreCellValue])
 
     function onRevisionChange(event, value) {
         //console.log(value)
@@ -71,9 +72,14 @@ const TimelineDataGrid = () => {
         setSelectRevisionDescKey(revisionKey);
     }, []);
 
+    const onToggleCompareCellValue = () => {
+        //window.location.reload();
+        setComapreCellValue(!comapreCellValue);
+    }
+
     return (
         <div className="TimelineView">
-            <TimelineGridView dataList={dataList} compareResult={compareResult} onSelectedRow={onSelectedRow} />
+            <TimelineGridView dataList={dataList} compareResult={compareResult} onSelectedRow={onSelectedRow} onToggleCompareCellValue={onToggleCompareCellValue}/>
             <Slider 
                 value={selectRevisionIndex}
                 valueLabelDisplay="auto"

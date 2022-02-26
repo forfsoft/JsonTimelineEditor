@@ -1,8 +1,13 @@
 import './../App.css';
 import React, { useState, useEffect, Component } from 'react';
 import MaterialTable, { MTableToolbar } from 'material-table';
+//import CompareArrowsIcon from '@material-ui/icon/search';
+//import Delete from '@material-ui/icons/Delete';
+import CompareArrows from '@material-ui/icons/CompareArrows';
 
-export function TimelineGridView({dataList, compareResult, onSelectedRow}) {
+//import Save from '@material-ui/icons/Save';
+
+export function TimelineGridView({dataList, compareResult, onSelectedRow, onToggleCompareCellValue}) {
     const [columns, setColumns] = useState([]);
     const [datas, setDatas] = useState([]);
     const [titleName, setTitleName] = useState("Data Timeline Compare");
@@ -71,7 +76,7 @@ export function TimelineGridView({dataList, compareResult, onSelectedRow}) {
     }
 
     function onRowClick(event, rowData) {
-        console.log(columns)
+        //console.log(columns)
         onSelectedRow(rowData);
     }
 
@@ -92,7 +97,14 @@ export function TimelineGridView({dataList, compareResult, onSelectedRow}) {
                             backgroundColor: getRowColor(rowData)
                         })
                     }}
-
+                    actions={[
+                        {
+                          icon: CompareArrows,
+                          tooltip: 'Toggle Compare Value',
+                          isFreeAction: true,
+                          onClick: (event) => onToggleCompareCellValue()
+                        }
+                      ]}
                     onRowClick={onRowClick}
                 />
             </div>
