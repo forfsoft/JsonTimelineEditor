@@ -27,7 +27,7 @@
             "editable": "never"
         }
     ],
-    "bodys": [
+    "datas": [
         {  
             "state": "none",
             "revision": "1",

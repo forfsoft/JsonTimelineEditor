@@ -10,6 +10,11 @@
   position: absolute;
 }
 
+.TimelineSlider {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
 .DetailView {
   background-color: #333333;
 }

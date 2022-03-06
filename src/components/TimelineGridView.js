@@ -7,26 +7,26 @@ import CompareArrows from '@material-ui/icons/CompareArrows';
 
 //import Save from '@material-ui/icons/Save';
 
-export function TimelineGridView({dataList, compareResult, onSelectedRow, onToggleCompareCellValue}) {
+export function TimelineGridView({titleName, compareResult, onSelectedRow}) {
     const [columns, setColumns] = useState([]);
     const [datas, setDatas] = useState([]);
-    const [titleName, setTitleName] = useState("Data Timeline Compare");
+    //const [titleName, setTitleName] = useState("Data Timeline Compare");
 
-    useEffect(() => {
-        var lastRevisionData = dataList[dataList.length - 1];
-        if (undefined != lastRevisionData && undefined != lastRevisionData["extra"]) {
-            var title = lastRevisionData["extra"].title;
-            if (undefined != title) {
-                setTitleName(title);
-            }
-        }
-    }, [dataList]);
+    // useEffect(() => {
+    //     var lastRevisionData = dataList[dataList.length - 1];
+    //     if (undefined != lastRevisionData && undefined != lastRevisionData["extra"]) {
+    //         var title = lastRevisionData["extra"].title;
+    //         if (undefined != title) {
+    //             setTitleName(title);
+    //         }
+    //     }
+    // }, [dataList]);
 
     useEffect(() => {
         var headers = restoreColumnOption(compareResult["headers"]);
         setColumns(headers);
         //setColumns(compareResult["headers"]);
-        setDatas(compareResult["bodys"]);
+        setDatas(compareResult["datas"]);
     }, [compareResult]);
 
     useEffect(() => {
@@ -97,14 +97,14 @@ export function TimelineGridView({dataList, compareResult, onSelectedRow, onTogg
                             backgroundColor: getRowColor(rowData)
                         })
                     }}
-                    actions={[
-                        {
-                          icon: CompareArrows,
-                          tooltip: 'Toggle Compare Value',
-                          isFreeAction: true,
-                          onClick: (event) => onToggleCompareCellValue()
-                        }
-                      ]}
+                    // actions={[
+                    //     {
+                    //       icon: CompareArrows,
+                    //       tooltip: 'Toggle Compare Value',
+                    //       isFreeAction: true,
+                    //       onClick: (event) => onToggleCompareCellValue()
+                    //     }
+                    //   ]}
                     onRowClick={onRowClick}
                 />
             </div>

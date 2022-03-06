@@ -2,10 +2,11 @@ import './../App.css';
 import React, { useState, useEffect, useCallback } from 'react';
 import TimelineDetailView from './TimelineDetailView'
 import TimelineGridView from './TimelineGridView'
+import CompareConfig from './../config.json'
 import jsonData1 from './../testData#1.json'
 import jsonData2 from './../testData#2.json'
 import jsonData3 from './../testData#3.json'
-import { InitJsonCompare, JsonCompareBody } from './DataCompare'
+import { InitCompare, ExecuteCompare } from './DataCompare'
 import { TextField, Slider } from '@material-ui/core'
 
 const TimelineDataGrid = () => {
@@ -23,7 +24,7 @@ const TimelineDataGrid = () => {
         compareFiles.push(jsonData2);
         compareFiles.push(jsonData3);
         setDataList(compareFiles);
-        var revisions = InitJsonCompare(compareFiles, "alias");
+        var revisions = InitCompare(compareFiles, CompareConfig["KeyColumnName"]);
         setRevisionMap(revisions);
 
         setSelectRevisionIndex(compareFiles.length-1);
@@ -52,12 +53,12 @@ const TimelineDataGrid = () => {
             compareList.push(dataList[i]);
         }
         //console.log(selectRevisionIndex, compareList)
-        var compare = JsonCompareBody(compareList, "alias", comapreCellValue);
+        var compare = ExecuteCompare(compareList, CompareConfig["KeyColumnName"], CompareConfig["ViewComapreCellValue"]);
         if (undefined != compare) {
             setCompareResult(compare);
             //console.log(compare)
         }
-    }, [dataList, revisionMaxCount, selectRevisionIndex, comapreCellValue])
+    }, [dataList, revisionMaxCount, selectRevisionIndex])
 
     function onRevisionChange(event, value) {
         //console.log(value)
@@ -72,18 +73,15 @@ const TimelineDataGrid = () => {
         setSelectRevisionDescKey(revisionKey);
     }, []);
 
-    const onToggleCompareCellValue = () => {
-        //window.location.reload();
-        setComapreCellValue(!comapreCellValue);
-    }
-
     return (
         <div className="TimelineView">
-            <TimelineGridView dataList={dataList} compareResult={compareResult} onSelectedRow={onSelectedRow} onToggleCompareCellValue={onToggleCompareCellValue}/>
-            <Slider 
-                value={selectRevisionIndex}
-                valueLabelDisplay="auto"
-                step={1} marks min={0} max={revisionMaxCount} onChange={onRevisionChange} />
+            <TimelineGridView titleName={CompareConfig["Title"]} compareResult={compareResult} onSelectedRow={onSelectedRow} />
+            <div className="TimelineSlider">
+                <Slider
+                    value={selectRevisionIndex}
+                    valueLabelDisplay="auto"
+                    step={1} marks min={0} max={revisionMaxCount} onChange={onRevisionChange} />
+            </div>
             <TimelineDetailView dataList={dataList} revisionMap={revisionMap} selectRevisionKey={selectRevisionDescKey} />
         </div>
     )

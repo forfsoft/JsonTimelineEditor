@@ -1,5 +1,5 @@
-function createCompareHeader(dataList){
-    if (undefined === dataList) {
+function createCompareHeader(compareObjects){
+    if (undefined === compareObjects) {
         return;
     }
 
@@ -9,12 +9,12 @@ function createCompareHeader(dataList){
     headers.push(headerStateElement);
     headers.push(headerRevisionElement);
 
-    //console.log(dataList)
+    //console.log(compareObjects)
     const columns = new Set()
-    for (var data of dataList) {
-        var bodys = data["bodys"];
-        for (var body of bodys) {
-            for (var element in body) {
+    for (var object of compareObjects) {
+        var datas = object["datas"];
+        for (var data of datas) {
+            for (var element in data) {
                 columns.add(element)
             };
         };
@@ -30,15 +30,15 @@ function createCompareHeader(dataList){
     return headers;
 }
 
-function findBodyIndex(bodys, keyColumnName, findKey) {
-    if (bodys === undefined) {
-        console.log("bodys undefined");
+function findDataIndex(datas, keyColumnName, findKey) {
+    if (datas === undefined) {
+        console.log("datas undefined");
         return -1;
     }
 
-    for (var i = 0; i < bodys.length; i++) {
-        var body = bodys[i];
-        var keyName = body[keyColumnName];
+    for (var i = 0; i < datas.length; i++) {
+        var data = datas[i];
+        var keyName = data[keyColumnName];
         if (findKey === keyName) {
             return i+1;
         }
@@ -60,113 +60,113 @@ function deepCompareMaps(map1, map2) {
     return true;
 }
 
-function bodyCompare(dataList, keyColumnName, comapreCellValue) {
-    if (dataList.length < 2) {
+function dataCompare(compareObjects, keyColumnName, comapreCellValue) {
+    if (compareObjects.length < 2) {
         console.log("data file length error");
         return;
     }
 
-    var lastIndex = dataList.length - 1;
-    var previousIndex = dataList.length - 2;
+    var lastIndex = compareObjects.length - 1;
+    var previousIndex = compareObjects.length - 2;
 
-    var outputBodys = []
-    var currentBodys = dataList[lastIndex]["bodys"];
-    var currentRevision = dataList[lastIndex]["extra"]["revision"];
+    var outputDatas = []
+    var currentDatas = compareObjects[lastIndex]["datas"];
+    var currentRevision = compareObjects[lastIndex]["extra"]["revision"];
     
     // None, Modify, Add State 
-    var previousMap = dataList[previousIndex]["map"];
-    for (var body of currentBodys) {
+    var previousMap = compareObjects[previousIndex]["map"];
+    for (var data of currentDatas) {
         var compareState = "none";
-        var keyName = body[keyColumnName];
-        var previousBody = previousMap[keyName];
-        if (previousBody === undefined) {
+        var keyName = data[keyColumnName];
+        var previousData = previousMap[keyName];
+        if (previousData === undefined) {
             compareState = "add";
         } else {
-            if (false === deepCompareMaps(previousBody, body)) {
+            if (false === deepCompareMaps(previousData, data)) {
                 compareState = "modify";
             }
         }
-        outputBodys.push(createCompareBody(currentRevision, compareState, body, (comapreCellValue) ? previousBody : undefined));
+        outputDatas.push(createCompareData(currentRevision, compareState, data, (comapreCellValue) ? previousData : undefined));
     }
 
     // Remove State
-    var currentMap = dataList[lastIndex]["map"];
-    var previousBodys = dataList[previousIndex]["bodys"];
-    var previousRevision = dataList[previousIndex]["extra"]["revision"];
-    var insertRemoveBodys = [];
+    var currentMap = compareObjects[lastIndex]["map"];
+    var previousDatas = compareObjects[previousIndex]["datas"];
+    var previousRevision = compareObjects[previousIndex]["extra"]["revision"];
+    var insertRemoveDatas = [];
     var matchAliasName = "";
-    for (var body of previousBodys) {
-        var keyName = body[keyColumnName];
-        var currentBody = currentMap[keyName];
-        if (currentBody === undefined) {
-            insertRemoveBodys.push(createCompareBody(currentRevision, "remove", body, undefined))
+    for (var data of previousDatas) {
+        var keyName = data[keyColumnName];
+        var currentData = currentMap[keyName];
+        if (currentData === undefined) {
+            insertRemoveDatas.push(createCompareData(currentRevision, "remove", data, undefined))
         } else {
-            if (insertRemoveBodys.length > 0) {
+            if (insertRemoveDatas.length > 0) {
                 // remove 정보를 한번에 push
                 var insertIndex = 0;
                 if (matchAliasName == "") {
 
                 } else {
-                    insertIndex = findBodyIndex(outputBodys, keyColumnName, matchAliasName);
+                    insertIndex = findDataIndex(outputDatas, keyColumnName, matchAliasName);
                     // 못찾으면 제일 상단에 추가
                     if (-1 === insertIndex) {
                         insertIndex = 0;
                     }
                 }
-                Array.prototype.splice.apply(outputBodys, [insertIndex, 0].concat(insertRemoveBodys));
-                insertRemoveBodys.length = 0;
+                Array.prototype.splice.apply(outputDatas, [insertIndex, 0].concat(insertRemoveDatas));
+                insertRemoveDatas.length = 0;
             }
             matchAliasName = keyName;
         }
     }
     // 남은건 제일 하단에 추가
-    if (insertRemoveBodys.length > 0) {
-        Array.prototype.push.apply(outputBodys,insertRemoveBodys);
+    if (insertRemoveDatas.length > 0) {
+        Array.prototype.push.apply(outputDatas,insertRemoveDatas);
     }
 
     // revision update
-    for (var body of outputBodys) {
-        var keyName = body[keyColumnName];
-        if (body["state"] == "none") {
-            var currentBody = currentMap[keyName];
+    for (var data of outputDatas) {
+        var keyName = data[keyColumnName];
+        if (data["state"] == "none") {
+            var currentData = currentMap[keyName];
             for (var i = previousIndex; i >= 0; i--) {
-                var compareMap = dataList[i]["map"];
+                var compareMap = compareObjects[i]["map"];
                 if (undefined == compareMap) {
                     break;
                 }
-                var compareBody = compareMap[keyName];
-                if (undefined == compareBody) {        
+                var compareData = compareMap[keyName];
+                if (undefined == compareData) {        
                     break;
                 }
-                if (false === deepCompareMaps(currentBody, compareBody)) {
+                if (false === deepCompareMaps(currentData, compareData)) {
                     break;
                 }
-                body["revision"] = dataList[i]["extra"]["revision"];
+                data["revision"] = compareObjects[i]["extra"]["revision"];
             }
         }
     }
-    return outputBodys
+    return outputDatas
 }
 
-function createAliasMap(dataList, keyColumnName) {
-    for (var data of dataList) {
+function createAliasMap(compareObjects, keyColumnName) {
+    for (var object of compareObjects) {
         var aliasMap = {}
-        var bodys = data["bodys"];
-        for (var body of bodys) {
-            var keyName = body[keyColumnName];
+        var datas = object["datas"];
+        for (var data of datas) {
+            var keyName = data[keyColumnName];
             if (keyName != undefined) {
-                aliasMap[keyName] = body;
+                aliasMap[keyName] = data;
             } else {
-                console.log("key column not found.", body)
+                console.log("key column not found.", data)
             }
         }
-        data["map"] = aliasMap;
+        object["map"] = aliasMap;
     }
 }
 
-function createRevisionMap(dataList) {
+function createRevisionMap(compareObjects) {
     var revisionMap = {}
-    for (var data of dataList) {
+    for (var data of compareObjects) {
         var extra = data["extra"];
         var revisionKey = extra["revision"];
         if (revisionKey != undefined) {
@@ -176,73 +176,73 @@ function createRevisionMap(dataList) {
     return revisionMap;
 }
 
-function createCompareBody(revisionKey, compareState, orgBody, previousBody) {
-    var newBody = {}
-    newBody = JSON.parse(JSON.stringify(orgBody));
+function createCompareData(revisionKey, compareState, orgData, previousData) {
+    var newData = {}
+    newData = JSON.parse(JSON.stringify(orgData));
 
-    if (undefined != previousBody) {
-        for (var key in newBody) {
-            var map1Value = newBody[key];
-            var map2Value = previousBody[key];
+    if (undefined != previousData) {
+        for (var key in newData) {
+            var map1Value = newData[key];
+            var map2Value = previousData[key];
             if (map1Value != map2Value) {
-                newBody[key] += "\n[" + map2Value + "]";
+                newData[key] += "\n[" + map2Value + "]";
             }
         }
     }
 
-    newBody["revision"] = revisionKey;
-    newBody["state"] = compareState;
-    //newBody["desc"] = "aasdasdf<p>as\nfasd<br/>asfd";
-    //console.log(newBody)
-    return newBody;
-    // newBody["revision"] = revisionKey;
-    // newBody["state"] = compareState;
+    newData["revision"] = revisionKey;
+    newData["state"] = compareState;
+    //newData["desc"] = "aasdasdf<p>as\nfasd<br/>asfd";
+    //console.log(newData)
+    return newData;
+    // newData["revision"] = revisionKey;
+    // newData["state"] = compareState;
     // 
-    // console.log(newBody)
-    // return Object.assign(newBody, orgBody);
+    // console.log(newData)
+    // return Object.assign(newData, orgData);
 }
 
-export function InitJsonCompare(dataList, keyColumnName){
-    if (dataList === undefined) {
+export function InitCompare(compareObjects, keyColumnName){
+    if (compareObjects === undefined) {
         console.log("data file not found");
         return;
     }
-    if (dataList.length < 2) {
+    if (compareObjects.length < 2) {
         console.log("data file length error");
         return;
     }
-    createAliasMap(dataList, keyColumnName)
-    var revisionMap = createRevisionMap(dataList)
-    //console.log(dataList, revisionMap)
-    //console.log(dataList)    
+    createAliasMap(compareObjects, keyColumnName)
+    var revisionMap = createRevisionMap(compareObjects)
+    //console.log(compareObjects, revisionMap)
+    //console.log(compareObjects)    
     return revisionMap;
 }
 
-export function JsonCompareBody(dataList, keyColumnName, comapreCellValue){
-    if (dataList === undefined) {
+export function ExecuteCompare(compareObjects, keyColumnName, comapreCellValue){
+    if (compareObjects === undefined) {
         console.log("data file not found");
         return;
     }
 
-    if (dataList.length == 0) {
+    if (compareObjects.length == 0) {
         console.log("data file length error");
         return;
     }
 
-    var headers = createCompareHeader(dataList);
+    var headers = createCompareHeader(compareObjects);
     var bodys = []
-    if (dataList.length == 1) {
-        var currentBodys = dataList[0]["bodys"];
-        var currentRevision = dataList[0]["extra"]["revision"];
+    if (compareObjects.length == 1) {
+        var currentBodys = compareObjects[0]["datas"];
+        var currentRevision = compareObjects[0]["extra"]["revision"];
         for (var body of currentBodys) {
-            bodys.push(createCompareBody(currentRevision, "none", body, undefined));
+            bodys.push(createCompareData(currentRevision, "none", body, undefined));
         }
     } else {
-        bodys = bodyCompare(dataList, keyColumnName, comapreCellValue)
+        bodys = dataCompare(compareObjects, keyColumnName, comapreCellValue)
     }
 
     var output = {}
     output["headers"] = headers;
-    output["bodys"] = bodys;
+    output["datas"] = bodys;
     return output;
 }

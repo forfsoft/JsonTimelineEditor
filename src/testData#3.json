@@ -1,5 +1,5 @@
 {
-    "bodys": [
+    "datas": [
         { 
             "alias": "test-event", 
             "value": "false",
