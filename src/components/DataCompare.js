@@ -192,14 +192,7 @@ function createCompareData(revisionKey, compareState, orgData, previousData) {
 
     newData["revision"] = revisionKey;
     newData["state"] = compareState;
-    //newData["desc"] = "aasdasdf<p>as\nfasd<br/>asfd";
-    //console.log(newData)
     return newData;
-    // newData["revision"] = revisionKey;
-    // newData["state"] = compareState;
-    // 
-    // console.log(newData)
-    // return Object.assign(newData, orgData);
 }
 
 export function InitCompare(compareObjects, keyColumnName){
@@ -212,9 +205,7 @@ export function InitCompare(compareObjects, keyColumnName){
         return;
     }
     createAliasMap(compareObjects, keyColumnName)
-    var revisionMap = createRevisionMap(compareObjects)
-    //console.log(compareObjects, revisionMap)
-    //console.log(compareObjects)    
+    var revisionMap = createRevisionMap(compareObjects) 
     return revisionMap;
 }
 

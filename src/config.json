@@ -1,37 +1,18 @@
 {
-    "Title": "config timelpas view",
+    "Title": "Config Timeline",
     "KeyColumnName" : "alias",
     "ViewComapreCellValue" : true,
-    "datas": [
-        { 
-            "alias": "test-event1", 
-            "value": "false",
-            "desc": "설 이벤트"
+    "Grouping" : false,
+    "Filtering" : true,
+    "AddRowColor" : "#CCCC77",
+    "RemoveRowColor" : "#FF7777",
+    "ModifyRowColor" : "#777777",
+    "ExtraDatas": {
+        "test-event1" : {  
+            "QA_desc": "extra 정보 1"
         },
-        { 
-            "alias": "test-event11", 
-            "value": "true",
-            "desc": "추석 이벤트"
-        },
-        { 
-            "alias": "test-event2", 
-            "value": "true",
-            "desc": "추석 이벤트"
-        },
-        { 
-            "alias": "test-event3-1", 
-            "value": "false",
-            "desc": "크리스마스 이벤트1"
-        },
-        { 
-            "alias": "test-event4", 
-            "value": "false",
-            "desc": "1주년 이벤트"
-        },
-        { 
-            "alias": "test-event-org", 
-            "value": "false",
-            "desc": "기본 이벤트"
+        "test-event2" : {  
+            "QA_desc": "extra 정보 2"
         }
-    ]
+    }
 }

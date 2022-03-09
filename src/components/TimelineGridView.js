@@ -7,20 +7,9 @@ import CompareArrows from '@material-ui/icons/CompareArrows';
 
 //import Save from '@material-ui/icons/Save';
 
-export function TimelineGridView({titleName, compareResult, onSelectedRow}) {
+export function TimelineGridView({config, compareResult, onSelectedRow}) {
     const [columns, setColumns] = useState([]);
     const [datas, setDatas] = useState([]);
-    //const [titleName, setTitleName] = useState("Data Timeline Compare");
-
-    // useEffect(() => {
-    //     var lastRevisionData = dataList[dataList.length - 1];
-    //     if (undefined != lastRevisionData && undefined != lastRevisionData["extra"]) {
-    //         var title = lastRevisionData["extra"].title;
-    //         if (undefined != title) {
-    //             setTitleName(title);
-    //         }
-    //     }
-    // }, [dataList]);
 
     useEffect(() => {
         var headers = restoreColumnOption(compareResult["headers"]);
@@ -67,11 +56,11 @@ export function TimelineGridView({titleName, compareResult, onSelectedRow}) {
 
     function getRowColor(rowData) {
         if (rowData.state === "add")
-            return '#FF66AA'
+            return config["AddRowColor"]
         else if (rowData.state === "remove")
-            return '#FF6666'
+            return config["RemoveRowColor"]
         else if (rowData.state === "modify")
-            return '#FFAA66'
+            return config["ModifyRowColor"]
         return undefined
     }
 
@@ -80,19 +69,26 @@ export function TimelineGridView({titleName, compareResult, onSelectedRow}) {
         onSelectedRow(rowData);
     }
 
+    function getMaxBodyHeight() {
+        if (config["Grouping"] === true) {
+            return "calc(100vh - 213px)"
+        }
+        return "calc(100vh - 160px)"
+    }
+
     return (
             <div className="GridView">
                 <MaterialTable
-                    title={titleName}
+                    title={config["Title"]}
                     columns={columns}
                     data={datas}
                     options={{
-                        grouping: true,
+                        grouping: config["Grouping"],
                         search: true,
                         columnsButton: true,
-                        filtering: true,
+                        filtering: config["Filtering"],
                         paging: false,
-                        maxBodyHeight: "calc(100vh - 167px)",
+                        maxBodyHeight: getMaxBodyHeight(),
                         rowStyle: rowData => ({
                             backgroundColor: getRowColor(rowData)
                         })

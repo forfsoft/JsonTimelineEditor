@@ -7,6 +7,7 @@ import jsonData1 from './../testData#1.json'
 import jsonData2 from './../testData#2.json'
 import jsonData3 from './../testData#3.json'
 import { InitCompare, ExecuteCompare } from './DataCompare'
+import { ExecuteMerge } from './DataMerge'
 import { TextField, Slider } from '@material-ui/core'
 
 const TimelineDataGrid = () => {
@@ -60,6 +61,11 @@ const TimelineDataGrid = () => {
         }
     }, [dataList, revisionMaxCount, selectRevisionIndex])
 
+    useEffect(() => {
+        ExecuteMerge(compareResult, CompareConfig["KeyColumnName"], CompareConfig["ExtraDatas"])
+    }, [compareResult])
+    
+
     function onRevisionChange(event, value) {
         //console.log(value)
         setSelectRevisionIndex(value)
@@ -75,7 +81,7 @@ const TimelineDataGrid = () => {
 
     return (
         <div className="TimelineView">
-            <TimelineGridView titleName={CompareConfig["Title"]} compareResult={compareResult} onSelectedRow={onSelectedRow} />
+            <TimelineGridView config={CompareConfig} compareResult={compareResult} onSelectedRow={onSelectedRow} />
             <div className="TimelineSlider">
                 <Slider
                     value={selectRevisionIndex}
